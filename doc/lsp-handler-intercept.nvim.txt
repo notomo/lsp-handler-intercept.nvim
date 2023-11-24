@@ -1,0 +1,100 @@
+*lsp-handler-intercept.nvim.txt*
+
+==============================================================================
+Lua module: lsp-handler-intercept
+                            *lsp-handler-intercept.nvim-lsp-handler-intercept*
+
+wrap({original_handler})                        *lsp-handler-intercept.wrap()*
+  Returns a wrapped handler.
+
+  Parameters: ~
+    {original_handler} (fun(err:table?,result:table?,ctx:table,config:table)) original handler to wrap. |lsp-handler|
+
+  Return: ~
+    (fun(err:table?,result:table?,ctx:table,config:table,additional_ctx:LspHandlerInterceptHandlerContext)) wrapped handler
+
+set({key_set}, {handler})                        *lsp-handler-intercept.set()*
+  Sets an intercept handler.
+  This is a low level api. Normally use |lsp-handler-intercept.on_request()|.
+
+  Parameters: ~
+    {key_set} (LspHandlerInterceptKeySet) |LspHandlerInterceptKeySet|
+    {handler} (fun(err:table?,result:table?,ctx:table,config:table)) |lsp-handler|
+
+on_request({handler}, {opts})             *lsp-handler-intercept.on_request()*
+  Sets a conditioal intercept handler for lsp request.
+
+  Parameters: ~
+    {handler} (fun(err:table?,result:table?,ctx:table,config:table)) |lsp-handler|
+    {opts} (LspHandlerInterceptOnRequestOptions) |LspHandlerInterceptOnRequestOptions|
+
+clear()                                        *lsp-handler-intercept.clear()*
+  Clears all intercept handlers.
+
+==============================================================================
+STRUCTURE                               *lsp-handler-intercept.nvim-STRUCTURE*
+
+LspHandlerInterceptHandlerContext          *LspHandlerInterceptHandlerContext*
+
+- {original_handler} (fun(err:table?,result:table?,ctx:table,config:table)) |lsp-handler|
+
+LspHandlerInterceptKeySet                          *LspHandlerInterceptKeySet*
+
+- {client_id} (integer?) |vim.lsp.client| id
+- {method} (string?) |vim.lsp.protocol.Methods|
+- {buffer} (integer?) buffer number
+
+LspHandlerInterceptOnRequestOptions      *LspHandlerInterceptOnRequestOptions*
+
+- {methods} (string[]?) if not nil, intercepts only matched method request. |vim.lsp.protocol.Methods|
+- {client_names} (string[]?) if not nil, intercepts only matched client request.
+- {buffer} (integer?) if not nil, intercepts only matched buffer number.
+- {predicate} ((fun(autocmd_args:table):boolean)?) if not nil, intercepts only when the function returns true.
+
+==============================================================================
+EXAMPLES                                 *lsp-handler-intercept.nvim-EXAMPLES*
+
+>
+  -- switch tsserver and cssmodules_ls handler by context
+
+  vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_hover] =
+    require("lsp-handler-intercept").wrap(vim.lsp.handlers.hover)
+
+  vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_definition] = require("lsp-handler-intercept").wrap(
+    function(err, result, ctx, config)
+      -- implement
+    end
+  )
+
+  -- The following is after/ftplugin/typescriptreact.lua
+
+  local cursor_on_jsx_class_name = function()
+    -- implement
+    return true
+  end
+
+  local methods = {
+    vim.lsp.protocol.Methods.textDocument_definition,
+    vim.lsp.protocol.Methods.textDocument_hover,
+  }
+  require("lsp-handler-intercept").on_request(function() end, {
+    bufnr = 0,
+    client_names = { "tsserver" },
+    methods = methods,
+    predicate = function()
+      return cursor_on_jsx_class_name()
+    end,
+  })
+  require("lsp-handler-intercept").on_request(function() end, {
+    bufnr = 0,
+    client_names = { "cssmodules_ls" },
+    methods = methods,
+    predicate = function()
+      return not cursor_on_jsx_class_name()
+    end,
+  })
+
+<
+
+==============================================================================
+vim:tw=78:ts=8:ft=help

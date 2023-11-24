@@ -1,0 +1,46 @@
+# lsp-handler-intercept.nvim
+
+This is a neovim plugin to intercept [lsp-handler](https://neovim.io/doc/user/lsp.html#lsp-handler) call.
+
+## Example
+
+```lua
+-- switch tsserver and cssmodules_ls handler by context
+
+vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_hover] =
+  require("lsp-handler-intercept").wrap(vim.lsp.handlers.hover)
+
+vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_definition] = require("lsp-handler-intercept").wrap(
+  function(err, result, ctx, config)
+    -- implement
+  end
+)
+
+-- The following is after/ftplugin/typescriptreact.lua
+
+local cursor_on_jsx_class_name = function()
+  -- implement
+  return true
+end
+
+local methods = {
+  vim.lsp.protocol.Methods.textDocument_definition,
+  vim.lsp.protocol.Methods.textDocument_hover,
+}
+require("lsp-handler-intercept").on_request(function() end, {
+  bufnr = 0,
+  client_names = { "tsserver" },
+  methods = methods,
+  predicate = function()
+    return cursor_on_jsx_class_name()
+  end,
+})
+require("lsp-handler-intercept").on_request(function() end, {
+  bufnr = 0,
+  client_names = { "cssmodules_ls" },
+  methods = methods,
+  predicate = function()
+    return not cursor_on_jsx_class_name()
+  end,
+})
+```
