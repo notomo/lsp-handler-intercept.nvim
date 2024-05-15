@@ -48,8 +48,6 @@ This is a neovim plugin to intercept [lsp-handler](https://neovim.io/doc/user/ls
 ```lua
 %s```]]):format(full_plugin_name, example)
 
-  local readme = io.open("README.md", "w")
-  readme:write(content)
-  readme:close()
+  util.write("README.md", content)
 end
 gen_readme()
