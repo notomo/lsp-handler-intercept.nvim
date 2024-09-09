@@ -1,5 +1,6 @@
 local helper = require("lsp-handler-intercept.test.helper")
 local intercepter = helper.require("lsp-handler-intercept")
+local assert = require("assertlib").typed(assert)
 
 describe("lsp-handler-intercept", function()
   before_each(helper.before_each)
@@ -23,9 +24,9 @@ describe("lsp-handler-intercept", function()
       method = "method_name",
     })
 
-    assert.is_same("err", got[1])
-    assert.is_same("result", got[2])
-    assert.is_same({
+    assert.same("err", got[1])
+    assert.same("result", got[2])
+    assert.same({
       buffer = 1,
       client_id = 2,
       method = "method_name",
@@ -140,7 +141,7 @@ describe("lsp-handler-intercept.clear()", function()
     intercepter.clear()
 
     local autocmds = vim.api.nvim_get_autocmds({ event = "LspRequest", buffer = 0 })
-    assert.is_same({}, autocmds)
+    assert.same({}, autocmds)
   end)
 end)
 
