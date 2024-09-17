@@ -10,11 +10,9 @@ This is a neovim plugin to intercept [lsp-handler](https://neovim.io/doc/user/ls
 vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_hover] =
   require("lsp-handler-intercept").wrap(vim.lsp.handlers.hover)
 
-vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_definition] = require("lsp-handler-intercept").wrap(
-  function(err, result, ctx, config)
-    -- implement
-  end
-)
+vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_definition] = require("lsp-handler-intercept").wrap(function()
+  -- implement
+end)
 
 -- The following is after/ftplugin/typescriptreact.lua
 

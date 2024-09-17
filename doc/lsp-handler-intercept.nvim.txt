@@ -19,13 +19,13 @@ set({key_set}, {handler})                        *lsp-handler-intercept.set()*
 
   Parameters: ~
     {key_set} (LspHandlerInterceptKeySet) |LspHandlerInterceptKeySet|
-    {handler} (fun(err:table?,result:table?,ctx:table,config:table)) |lsp-handler|
+    {handler} (fun(err:table?,result:table?,ctx:table,config:table)) ref: |lsp-handler|
 
 on_request({handler}, {opts})             *lsp-handler-intercept.on_request()*
   Sets a conditioal intercept handler for lsp request.
 
   Parameters: ~
-    {handler} (fun(err:table?,result:table?,ctx:table,config:table)) |lsp-handler|
+    {handler} (fun(err:table?,result:table?,ctx:table,config:table)) ref: |lsp-handler|
     {opts} (LspHandlerInterceptOnRequestOptions) |LspHandlerInterceptOnRequestOptions|
 
 clear()                                        *lsp-handler-intercept.clear()*
@@ -36,7 +36,7 @@ STRUCTURE                               *lsp-handler-intercept.nvim-STRUCTURE*
 
 LspHandlerInterceptHandlerContext          *LspHandlerInterceptHandlerContext*
 
-- {original_handler} (fun(err:table?,result:table?,ctx:table,config:table)) |lsp-handler|
+- {original_handler} (fun(err:table?,result:table?,ctx:table,config:table)) ref: |lsp-handler|
 
 LspHandlerInterceptKeySet                          *LspHandlerInterceptKeySet*
 
@@ -60,11 +60,9 @@ EXAMPLES                                 *lsp-handler-intercept.nvim-EXAMPLES*
   vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_hover] =
     require("lsp-handler-intercept").wrap(vim.lsp.handlers.hover)
 
-  vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_definition] = require("lsp-handler-intercept").wrap(
-    function(err, result, ctx, config)
-      -- implement
-    end
-  )
+  vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_definition] = require("lsp-handler-intercept").wrap(function()
+    -- implement
+  end)
 
   -- The following is after/ftplugin/typescriptreact.lua
 

@@ -1,7 +1,7 @@
 local M = {}
 
 --- @class LspHandlerInterceptHandlerContext
---- @field original_handler fun(err:table?,result:table?,ctx:table,config:table) |lsp-handler|
+--- @field original_handler fun(err:table?,result:table?,ctx:table,config:table) ref: |lsp-handler|
 
 --- Returns a wrapped handler.
 --- @param original_handler fun(err:table?,result:table?,ctx:table,config:table) original handler to wrap. |lsp-handler|
@@ -18,7 +18,7 @@ end
 --- Sets an intercept handler.
 --- This is a low level api. Normally use |lsp-handler-intercept.on_request()|.
 --- @param key_set LspHandlerInterceptKeySet |LspHandlerInterceptKeySet|
---- @param handler fun(err:table?,result:table?,ctx:table,config:table) |lsp-handler|
+--- @param handler fun(err:table?,result:table?,ctx:table,config:table) ref: |lsp-handler|
 function M.set(key_set, handler)
   require("lsp-handler-intercept.command").set(key_set, handler)
 end
@@ -30,7 +30,7 @@ end
 --- @field predicate (fun(autocmd_args:table):boolean)? if not nil, intercepts only when the function returns true.
 
 --- Sets a conditioal intercept handler for lsp request.
---- @param handler fun(err:table?,result:table?,ctx:table,config:table) |lsp-handler|
+--- @param handler fun(err:table?,result:table?,ctx:table,config:table) ref: |lsp-handler|
 --- @param opts LspHandlerInterceptOnRequestOptions |LspHandlerInterceptOnRequestOptions|
 function M.on_request(handler, opts)
   require("lsp-handler-intercept.command").on_request(handler, opts)
